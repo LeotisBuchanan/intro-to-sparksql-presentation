@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Introduction Apache Spark SQL </title>
+    <meta charset="utf-8">
+    <style>
+      @import url('./fonts/css?family=Roboto+Condensed|Roboto+Mono|Roboto+Slab|Roboto:300,300i,400');
+      body {  font-family: 'Roboto', sans-serif; font-weight: normal ;
+      letter-spacing:0.025em;font-size: 3.3em;}
+      h1, h2, h3 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: normal;
+      }
+      .title {font-size: 3.3em; color:#606060;font-weight:bold;letter-spacing:0.05em}
+      .author {font-size: 1.4em; color:#606060;font-weight:bold;letter-spacing:0.02em}
+      .institution {font-size: 1.0em;}
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content { font-size: .5em; font-weight: normal;letter-spacing:0.05em}
+      .remark-slide-content h1 { font-size: 1.5em; font-weight: bold;letter-spacing:0.05em}
+    .date {font-size: 1.0em;font-style: italic}
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Introduction to Apache Spark SQL
+
+<img src="images/spark.png" width="200" height="200" />
+
+
+
+---
+class: center, middle
+# *who?*
+.author[Leotis Buchanan]
+.center[### Data Engineer]
+.date[### October 13,2016]
+
+---
+
+# What will we talk about?
+
+- What is a machine learning system/application?
+
+- Desirable characteristics of a machine learning system.
+
+- Components of a machine learning system.
+
+- The reactive systems design paradigm.
+
+- Reactive Tools.
+
+- Example Reactive System Architecture.
+
+- What next?
+
+- Resources.
+
+---
+
+##  What is Apache Spark?
+
+
+### Apache Spark is a fast and general engine for large-scale data processing ###
+
+
+---
+# Some Exciting features of spark#
+
+- Easy to use
+  - Write parallel applications quickly in Java, Scala, Python, R.
+
+- General Purpose
+  - Need to Stream alot of data, spark does that.
+
+  - Need to query alot of data using sql, spark does that
+
+  - Need to write the next great complex analytic application, spark does that.
+
+  - if does not do it, spark is opensource, you can make it do that.
+---
+#Runs Everywhere#
+
+<img src="images/hadoop.jpg" width="350" height="200" /><img src="images/laptop.jpg" width="300" height="200" />
+<img src="images/mesos.jpeg" width="400" height="200" /><img src="images/cloud.png" width="200" height="200" />
+
+
+---
+#It talks with diverse data sources#
+
+<img src="images/hbase.png" width="350" height="200" />
+<img src="images/hdfs.jpg" width="300" height="200" />
+<img src="images/cassandra.png" width="300" height="200" />
+<img src="images/postgresql-logo.png" width="300" height="200" />
+<img src="images/oracle.png" width="200" height="200" />
+---
+# Lets do some  spark SQLing #
+
+copy the sans franciso tutorial from this point
+
+---
+## Loading Data ###
+
+
+
+---
+# Performing Queries #
+
+- select
+- where clause
+- aggregation,counts, group etc
+
+
+# Questions?
+
+
+---
+# Resources
+1. [Apache Spark SQL reference](https://spark.apache.org/sql/)
+
+
+
+
+    </textarea>
+
+    <script>
+     var slideshow = remark.create();
+
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+
+    <script src="remark-latest.min.js"></script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+          highlightStyle: 'monokai',
+          highlightLanguage: 'remark',
+          highlightLines: true
+        }) ;
+    </script>
+      </body>
+</html>

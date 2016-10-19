@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Introduction Building Reactive Machine Learning Systems </title>
+    <meta charset="utf-8">
+    <style>
+      @import url('./fonts/css?family=Roboto+Condensed|Roboto+Mono|Roboto+Slab|Roboto:300,300i,400');
+      body {  font-family: 'Roboto', sans-serif; font-weight: normal ;
+      letter-spacing:0.025em;font-size: 3.3em;}
+      h1, h2, h3 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: normal;
+      }
+      .title {font-size: 3.3em; color:#606060;font-weight:bold;letter-spacing:0.05em}
+      .author {font-size: 1.4em; color:#606060;font-weight:bold;letter-spacing:0.02em}
+      .institution {font-size: 1.0em;}
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content { font-size: .5em; font-weight: normal;letter-spacing:0.05em}
+      .remark-slide-content h1 { font-size: 1.5em; font-weight: bold;letter-spacing:0.05em}
+    .date {font-size: 1.0em;font-style: italic}
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Building Reactive Machine Learning Systems
+
+<img src="images/cassandra.png" width="200" height="200" />
+<img src="images/akka.svg" width="200" height="200" />
+<img src="images/scala.png" width="200" height="200" />
+<img src="images/spark.png" width="200" height="200" />
+<img src="images/kafka.png" width="200" height="200" />
+
+
+---
+class: center, middle
+# *who?*
+.author[Leotis Buchanan]
+.center[### Data Engineer]
+.date[### October 13,2016]
+
+---
+
+# What will we talk about?
+
+- What is a machine learning system/application?
+
+- Desirable characteristics of a machine learning system.
+
+- Components of a machine learning system.
+
+- The reactive systems design paradigm.
+
+- Reactive Tools.
+
+- Example Reactive System Architecture.
+
+- What next?
+
+- Resources.
+
+---
+
+## What is a machine learning system/application?
+
+A machine learning system has the following components
+
+- Data collection :
+   - ingest data from the outside world into the machine learning system.
+
+- Data transformation :
+   - transforms raw data into useful derived representations of that data called features and concepts.
+---
+- Model learning :
+   - learns models from the features and concepts.
+
+- Model publishing:
+    - makes a model available to make predictions.
+
+- Model serving:
+   - connects models to requests for predictions
+
+- Predictive 
+  - use available models to make predictions
+
+---
+### Desirable characteristics of a machine learning system
+
+
+#### Operational characteristics
+
+  - The system must remain responsive.
+
+  - The components of the system should be loosely coupled.
+
+  - The system needs to behave predictably regardless of high load or errors in the system itself.
+---
+#### Development process
+
+  - It should be easier for different developers to make changes to the system without breaking things.
+
+  - The code needs to use different programming idioms that ensure better performance when used consistently.
+
+---
+#### Predictive functionality
+
+ - Should be aware of its model performance.
+
+ - Should support evolution and change.
+
+ - Should support online experimentation.
+
+ - Should be easy for humans to supervise the system and correct any rogue behavior.
+
+
+---
+### How can we build systems with these characteristics?
+
+
+---
+## Reactive Systems and the Reactive Manifesto
+
+The reactive manifesto states a that system with the following traits can be considered to be reactive.
+
+
+![Image](reactive-traits.svg)
+
+
+#### Reactive systems should be :
+
+---
+
+####  Responsive
+
+   - Responds in a timely manner if at all possible.
+
+   - Responsiveness means that problems may be detected quickly and dealt with effectively.
+
+   - System must provide rapid and consistent response times.
+
+
+---
+#### Resilent
+
+The system stays responsive in the face of failure.
+
+- Resilience is achieved by
+
+   - Replication : for e.g having multiple model servers.
+
+   - Containment : if your model component fails,
+     it should not cause your prediction component to fail
+
+   - Isolation : All components should be isolated from each other. 
+
+   - Delegation : components should do one thing well and delegate every thing else.
+
+---
+#### Elastic
+
+- The system should remain responsive under varying workload.
+
+- React to changes in the input rate by increasing or decreasing the resources allocated to service these inputs.
+
+- The system should have no contention points are bottlenecks.
+
+- The system should allow sharding,replication and distribution of work among available resources.
+
+
+---
+#### Message Driven
+
+Components should communicate using asynchronous message-passing,This enables the following:
+
+- Boundary between components.
+
+- Loose coupling between components.
+
+- Isolation and location transparency.
+
+- Enables load management.
+
+- Elasticity.
+
+- Back-pressure.
+
+
+---
+### How do we make our machine learning systems reactive
+
+### Strategies
+
+- Assume data is infinite
+   
+- Assume your data is uncertain
+
+- Laziness
+  - only perform work if you have to. 
+---
+- Use Pure functions
+  - try to implement all your computations using pure functions.
+
+- Immutable facts
+  - make all your data, data structures and variables immutable( i.e constant)
+
+
+---
+### When not to use reactive machine learning
+
+- Research prototypes.
+
+- Temporary system.
+
+- Exploratory systems.
+
+- Hackatons.
+
+---
+
+### Reactive Tools
+
+What tools can you use to build reactive machine learning systems: The most popular ones are:
+
+
+<img src="images/cassandra.png" width="200" height="200" />
+<img src="images/akka.svg" width="200" height="200" />
+<img src="images/scala.png" width="200" height="200" />
+<img src="images/spark.png" width="200" height="200" />
+<img src="images/kafka.png" width="400" height="200" />
+---
+### Why scala?
+
+- Functional,allows you to implement pure functions.
+
+- Allows you to deal with uncertainty.
+
+- Type Inference.
+
+- Concurrency & Distribution.
+
+
+---
+## Reacting to Uncertainty in Scala
+
+scala allows you to specify that a function might not return a value, for example.
+```scala
+def readCSVFile(filename: String): Option[List[String]] = {
+   try {
+        Some(Source.fromFile(filename).getLines.toList)
+       } catch {
+         case e: Exception => None
+       }
+ }
+```
+
+---
+### Handling uncertainty of time
+
+- Scala Futures api allows you to  abstract over the uncertainty of actions which take time:
+
+   - data read/write
+
+   - model training
+
+
+---
+
+### A simple example
+```scala
+import concurrent.Future
+import concurrent.ExecutionContext.Implicits.global
+
+
+def cityTemp(name: String): Double = {
+ val url = "http://api.openweathermap.org/data/2.5/weather"
+ val cityUrl = s"$url?q=$name"
+ val json = io.Source.fromURL(cityUrl).mkString.trim
+ val pattern = """.*"temp":([\d.]+).*""".r
+ val pattern(temp) = json
+ temp.toDouble
+ }
+
+
+val cityTemps = Future sequence Seq(
+  Future(cityTemp("Fresno")), Future(cityTemp("Tempe"))
+)
+
+```
+---
+```scala
+val cityTemps = Future sequence Seq(
+ Future(cityTemp("Fresno")), Future(cityTemp("Tempe"))
+ )
+
+
+cityTemps onSuccess {
+ case Seq(x,y) if x > y => println(s"Fresno is warmer: $x K")
+ case Seq(x,y) if y > x => println(s"Tempe is warmer: $y K")
+}
+
+```
+
+---
+## Akka
+
+### Akka is a toolkit and runtime for building highly concurrent,distributed, and resilient message-driven applications on the JVM
+
+- Simple Concurrency & Distribution:
+  - Asynchronous and Distributed by Design. High-level abstractions like Actors, Streams and Future
+
+- Resilient by Design
+  - Write systems that self-heal. Remote and local supervisor hierarchies
+
+---
+- High Performance
+  - 50 million msg/sec on a single machine. Small memory footprint; ~2.5 million actors per GB of heap
+
+
+- Elastic & Decentralized
+  - Adaptive cluster management, load balancing, routing, partitioning and sharding
+
+
+- Extensible
+  - Use Akka Extensions to adapt Akka to fit your needs
+
+
+---
+## Ensuring Resilence with Akka
+
+```scala
+class DatabaseConnection(url: String) {
+  var transactions = new mutable.HashMap[String, Any]()
+
+  def insert(updateMap: Map[String, Any]) = {
+
+  if (Random.nextBoolean()) throw new Exception
+
+  updateMap.foreach {
+   case (key, value) => transactions.update(key, value)
+  }
+ }
+}
+```
+---
+```scala
+case class Transaction(timestamp: Long, customerId: Long, amount: double)
+
+
+class TransactionWriter(connection: DatabaseConnection) extends Actor {
+
+def receive = {
+
+   case Transaction(timestamp, customerId, amount) =>
+
+   connection.insert(Map("timestamp" -> timestamp,
+   "customerId" -> customerId,"amount" -> amount))
+  }
+}
+
+```
+---
+```scala
+
+class WriterSupervisor(writerProps: Props) extends Actor {
+
+  override def supervisorStrategy = OneForOneStrategy() {
+     case exception: Exception => Restart
+   }
+
+  val writer = context.actorOf(writerProps)
+
+  def receive = {
+     case message => writer forward message
+   }
+}
+
+```
+---
+```scala
+
+object  TransactionApplication extends App {
+  val system = ActorSystem("transactionLogger")
+
+  val connection = new DatabaseConnection("http://remotedatabase")
+
+  val writerProps = Props(new TransactionWriter(connection))
+
+  val writerSuperProps = Props(new WriterSupervisor(writerProps))
+
+  val transactionSystem = system.actorOf(writerSuperProps)
+
+  transactionSystem ! Transaction(12637, 1, 12000)
+
+  transactionSystem ! Transaction(45677, 2, 34677)
+
+  transactionSystem ! Transaction(56789, 3, 89000)
+
+  println(connection.transactions)
+}
+```
+---
+
+<p>Here is another example, showing how we can implement a kafka producer as an actor with supervision.</p>
+
+```scala
+
+class KafkaProducerActor[K, V](config: ProducerConfig) extends Actor {
+override val supervisorStrategy =
+OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
+case _: ActorInitializationException => Stop
+case _: FailedToSendMessageException => Restart
+case _: ProducerClosedException => Restart
+case _: NoBrokersForPartitionException => Escalate
+case _: KafkaException => Escalate
+case _: Exception => Escalate
+}
+private val producer = new KafkaProducer[K, V](producerConfig)
+override def postStop(): Unit = producer.close()
+def receive = {
+case e: KafkaMessageEnvelope[K,V] => producer.send(e)
+}
+}
+
+```
+
+---
+# Apache spark
+
+-  a framework for large-scale data processing written in Scala.
+
+- incredibly fast data processing engine.
+
+- can handle enormous amounts of data when used on a cluster.
+
+- easy to use, thanks to an elegant functional API.
+
+- it has libraries that support common use cases like data analysis, graph analytics, and machine learning.
+
+---
+###  An example spark app.
+
+
+
+```
+    val conf = new SparkConf().setAppName("ModelExample")
+    val sc = new SparkContext(conf)
+
+    val inputBasePath = "example_data"
+    val outputBasePath = "."
+    val trainingDataPath = inputBasePath + "/training.txt"
+    val testingDataPath = inputBasePath + "/testing.txt"
+    val currentOutputPath = outputBasePath + System.currentTimeMillis()
+
+    val trainingData = sc.textFile(trainingDataPath)
+    val trainingParsed = trainingData.map { line =>
+        val parts = line.split(',')
+        LabeledPoint(parts(0).toDouble,
+                     Vectors.dense(parts(1)
+                     .split(' ').map(_.toDouble)))
+                    }.cache()
+```
+---
+
+```scala
+    val testingData = sc.textFile(testingDataPath)
+    val testingParsed = testingData.map { line =>
+                        val parts = line.split(',')
+                        LabeledPoint(parts(0).toDouble,
+                        Vectors.dense(parts(1).
+                        split(' ').map(_.toDouble)))
+                        }.cache()
+
+    //training the model
+```
+
+---
+
+```scala
+
+    val numIterations = 100
+    val model = LinearRegressionWithSGD.train(trainingParsed,
+               numIterations)
+
+    val predictionsAndLabels = testingParsed.map {
+         case LabeledPoint(label, features) =>
+         val prediction = model.predict(features)
+         (prediction, label)
+    }
+
+    val metrics = new MulticlassMetrics(predictionsAndLabels)
+    val precision = metrics.precision
+    val recall = metrics.recall
+    println(s"Precision: $precision Recall: $recall")
+
+    model.save(sc, currentOutputPath)
+
+
+```
+---
+# Apache Cassandra
+
+- FAULT TOLERANT
+  - Data is automatically replicated to multiple nodes for fault-tolerance.
+  - Replication across multiple data centers is supported. Failed nodes can be replaced with no downtime.
+
+- PERFORMANT
+   - Cassandra consistently outperforms popular NoSQL alternatives in benchmarks and real applications.
+---
+- DECENTRALIZED
+  - There are no single points of failure. There are no network bottlenecks. Every node in the cluster is identical
+
+- SCALABLE
+   - Apple's, 75,000 nodes storing over 10 PB of data.
+   - Netflix (2,500 nodes, 420 TB, over 1 trillion requests per day)
+   - Chinese search engine Easou (270 nodes, 300 TB, over 800 million reqests per day)
+   - eBay (over 100 nodes, 250 TB).
+---
+- DURABLE
+  - Cassandra is suitable for applications that can't afford to lose data, even when an entire data center goes down.
+
+- ELASTIC
+   - Read and write throughput both increase linearly as new machines are added, with no downtime or interruption to applications.
+
+
+---
+# Sample Architecture of reactive machine learning system.
+
+<img src="images/architecture.svg" width="800" height="500" />
+
+
+---
+### Whats next?
+.title[Lets build something!! :-)]
+
+
+---
+# Questions?
+
+
+---
+# Resources
+
+
+1. [Scala documentation]()
+2. [Apache spark mllib  reference](https://spark.apache.org/)
+3. [Apache Spark Streaming reference](https://spark.apache.org/)
+4. [Cassandra reference](https://cassandra.apache.org/)
+5. [The reactive manifesto](http://www.reactivemanifesto.org/)
+6. [Akka](http://akka.io/)
+7. [Reference application](https://github.com/killrweather/killrweather)
+
+
+
+    </textarea>
+
+    <script>
+     var slideshow = remark.create();
+
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+
+    <script src="remark-latest.min.js"></script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+          highlightStyle: 'monokai',
+          highlightLanguage: 'remark',
+          highlightLines: true
+        }) ;
+    </script>
+      </body>
+</html>
